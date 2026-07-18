@@ -1,7 +1,0 @@
-page.goto: Navigation to "https://ecommerce-playground.lambdatest.io/" is interrupted by another navigation to "https://ecommerce-playground.lambdatest.io/"
-Call log:
-[2m  - navigating to "https://ecommerce-playground.lambdatest.io/", waiting until "domcontentloaded"[22m
-
-    at navigateToUrl (/home/praneethreddy/Projects/playwright/playwrightFInalFramework/tests/ui/full-page-tests/fullPageRegression.spec.ts:19:33)
-    at /home/praneethreddy/Projects/playwright/playwrightFInalFramework/tests/ui/full-page-tests/fullPageRegression.spec.ts:54:19
-    at /home/praneethreddy/Projects/playwright/playwrightFInalFramework/tests/ui/full-page-tests/fullPageRegression.spec.ts:53:11

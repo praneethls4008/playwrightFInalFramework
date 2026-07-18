@@ -1,8 +1,0 @@
-page.goto: Test ended.
-Call log:
-[2m  - navigating to "https://qaplayground.com/", waiting until "domcontentloaded"[22m
-
-    at getUrl (/home/praneethreddy/Projects/playwright/playwrightFInalFramework/tests/ui/helper/navigationHelper.ts:11:10)
-    at navigateToUrl (/home/praneethreddy/Projects/playwright/playwrightFInalFramework/tests/ui/helper/navigationHelper.ts:47:34)
-    at /home/praneethreddy/Projects/playwright/playwrightFInalFramework/tests/ui/full-page-tests/fullPageRegression.spec.ts:36:53
-    at /home/praneethreddy/Projects/playwright/playwrightFInalFramework/tests/ui/full-page-tests/fullPageRegression.spec.ts:33:7
