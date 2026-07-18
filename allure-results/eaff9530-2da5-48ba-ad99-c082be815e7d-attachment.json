@@ -1,0 +1,8 @@
+{
+  "requestedUrl": "https://ecommerce-playground.lambdatest.io/",
+  "finalUrl": "https://ecommerce-playground.lambdatest.io/",
+  "finalStatus": 200,
+  "is2xx": true,
+  "hasRedirect": false,
+  "redirectChain": []
+}

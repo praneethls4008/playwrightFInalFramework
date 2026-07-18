@@ -1,0 +1,21 @@
+TypeError: (0 , _playGroundHeaderComponentTests.validateQAPlaygroundHeader) is not a function
+    at validateHeader (/home/praneethreddy/Projects/playwright/playwrightFInalFramework/tests/ui/helper/header/headerComponentTests.ts:9:37)
+    at validationFunction (/home/praneethreddy/Projects/playwright/playwrightFInalFramework/tests/ui/full-page-tests/fullPageRegression.spec.ts:60:31)
+    at /home/praneethreddy/Projects/playwright/playwrightFInalFramework/tests/ui/helper/runComponent.ts:14:13
+    at TestStepInfoImpl._runStepBody (/home/praneethreddy/Projects/playwright/playwrightFInalFramework/node_modules/playwright/lib/worker/workerProcessEntry.js:1336:20)
+    at /home/praneethreddy/Projects/playwright/playwrightFInalFramework/node_modules/playwright/lib/common/index.js:2435:36
+    at raceAgainstDeadline (/home/praneethreddy/Projects/playwright/playwrightFInalFramework/node_modules/playwright-core/lib/coreBundle.js:4411:5)
+    at /home/praneethreddy/Projects/playwright/playwrightFInalFramework/node_modules/playwright/lib/common/index.js:2433:25
+    at AsyncLocalStorage.run (node:internal/async_local_storage/async_context_frame:63:14)
+    at _Zone.run (/home/praneethreddy/Projects/playwright/playwrightFInalFramework/node_modules/playwright-core/lib/coreBundle.js:8572:40)
+    at _TestTypeImpl._step (/home/praneethreddy/Projects/playwright/playwrightFInalFramework/node_modules/playwright/lib/common/index.js:2430:55)
+    at runComponentStep (/home/praneethreddy/Projects/playwright/playwrightFInalFramework/tests/ui/helper/runComponent.ts:13:7)
+    at /home/praneethreddy/Projects/playwright/playwrightFInalFramework/tests/ui/full-page-tests/fullPageRegression.spec.ts:55:7
+    at /home/praneethreddy/Projects/playwright/playwrightFInalFramework/node_modules/playwright/lib/worker/workerProcessEntry.js:1662:9
+    at /home/praneethreddy/Projects/playwright/playwrightFInalFramework/node_modules/playwright/lib/worker/workerProcessEntry.js:1154:11
+    at TimeoutManager.withRunnable (/home/praneethreddy/Projects/playwright/playwrightFInalFramework/node_modules/playwright/lib/worker/workerProcessEntry.js:425:14)
+    at TestInfoImpl._runWithTimeout (/home/praneethreddy/Projects/playwright/playwrightFInalFramework/node_modules/playwright/lib/worker/workerProcessEntry.js:1152:7)
+    at /home/praneethreddy/Projects/playwright/playwrightFInalFramework/node_modules/playwright/lib/worker/workerProcessEntry.js:1660:7
+    at WorkerMain._runTest (/home/praneethreddy/Projects/playwright/playwrightFInalFramework/node_modules/playwright/lib/worker/workerProcessEntry.js:1633:5)
+    at WorkerMain.runTestGroup (/home/praneethreddy/Projects/playwright/playwrightFInalFramework/node_modules/playwright/lib/worker/workerProcessEntry.js:1528:9)
+    at process.<anonymous> (/home/praneethreddy/Projects/playwright/playwrightFInalFramework/node_modules/playwright/lib/common/index.js:1991:25)

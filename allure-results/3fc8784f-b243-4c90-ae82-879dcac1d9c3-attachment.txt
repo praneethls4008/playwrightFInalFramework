@@ -1,0 +1,9 @@
+page.goto: Protocol error (Playwright.navigate): Cannot navigate to invalid URL
+Call log:
+[2m  - navigating to "", waiting until "load"[22m
+
+    at validateHeader (/home/praneethreddy/Projects/playwright/playwrightFInalFramework/tests/ui/helper/headerComponentTests.ts:10:14)
+    at validationFunction (/home/praneethreddy/Projects/playwright/playwrightFInalFramework/tests/ui/full-page-tests/fullPageRegression.spec.ts:60:31)
+    at /home/praneethreddy/Projects/playwright/playwrightFInalFramework/tests/ui/helper/runComponent.ts:14:13
+    at runComponentStep (/home/praneethreddy/Projects/playwright/playwrightFInalFramework/tests/ui/helper/runComponent.ts:13:7)
+    at /home/praneethreddy/Projects/playwright/playwrightFInalFramework/tests/ui/full-page-tests/fullPageRegression.spec.ts:55:7

@@ -1,0 +1,8 @@
+{
+  "requestedUrl": "https://qaplayground.com/bank/login",
+  "finalUrl": "https://qaplayground.com/bank/login",
+  "finalStatus": 200,
+  "is2xx": true,
+  "hasRedirect": false,
+  "redirectChain": []
+}

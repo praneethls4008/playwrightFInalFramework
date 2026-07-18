@@ -1,0 +1,108 @@
+# Instructions
+
+- Following Playwright test failed.
+- Explain why, be concise, respect Playwright best practices.
+- Provide a snippet of code with the fix, if possible.
+
+# Test info
+
+- Name: ui/component-tests/header.spec.ts >> QA_PLAYGROUND Header
+- Location: tests/ui/component-tests/header.spec.ts:14:9
+
+# Error details
+
+```
+Error: locator.click: Test ended.
+Call log:
+  - waiting for getByRole('navigation', { name: 'Main navigation' }).getByRole('link', { name: 'Log in / Sign up' })
+    - locator resolved to <a href="/auth/sign-in" class="group/button inline-flex shrink-0 items-center justify-center border bg-clip-padding whitespace-nowrap transition-all outline-none select-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 active:not-aria-[haspopup]:translate-y-px disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40…>Log in / Sign up</a>
+  - attempting click action
+    - waiting for element to be visible, enabled and stable
+
+```
+
+# Test source
+
+```ts
+  1  | import {test, Locator, Page, expect} from '@playwright/test';
+  2  | import { anchorEleType } from '../../types/commonElementTypes';
+  3  | import { HeaderDataType } from './HeaderComponent';
+  4  | import { extractAnchorElementsData } from '../../helper/reuableActions/getAnchorEleData';
+  5  | import { getComputedStyle } from '../../helper/reuableActions/getComputedStyles';
+  6  | 
+  7  | export class QAPlaygroundHeaderComponent{
+  8  | 
+  9  |     private readonly page: Page;
+  10 |     private readonly headerLocator: Locator;
+  11 |     private readonly bannerLocator: Locator;
+  12 |     private readonly menuLocator: Locator;
+  13 |     private readonly menuLinksLocator: Locator;
+  14 |     private readonly loginBtnLocator: Locator;
+  15 |     private readonly loginPageSignInLocator: Locator;
+  16 |     private readonly darkModeBtnLocator: Locator;
+  17 |     private readonly lightModeBtnLocator: Locator;
+  18 |     
+  19 |     private readonly fullPageLocator: Locator;
+  20 | 
+  21 |     constructor(page: Page){
+  22 |         this.page = page;
+  23 |         this.headerLocator = this.page.getByRole('navigation', { name: 'Main navigation' });
+  24 |         this.bannerLocator = this.headerLocator.getByRole('link').first();
+  25 |         this.menuLocator = this.headerLocator.getByRole('list');
+  26 |         this.menuLinksLocator = this.menuLocator.getByRole('link');
+  27 |         this.loginBtnLocator = this.headerLocator.getByRole('link', { name: 'Log in / Sign up' });
+  28 |         this.darkModeBtnLocator = this.headerLocator.getByRole('button', { name: 'Switch to dark mode' });
+  29 |         this.lightModeBtnLocator = this.headerLocator.getByRole('button', { name: 'Switch to light mode' });
+  30 |         this.loginPageSignInLocator = this.page.getByTestId('sign-in-card');
+  31 |         this.fullPageLocator = this.page.locator('html');
+  32 |     }
+  33 | 
+  34 |     async getBannerText(): Promise<string>{
+  35 |       return await this.bannerLocator.innerText();
+  36 |     }
+  37 | 
+  38 |     async getBannerLink(): Promise<string>{
+  39 |       const href = await this.bannerLocator.getAttribute('href');
+  40 |       return href!==null ? href : '';
+  41 |     }
+  42 | 
+  43 |     async getMenuLinks(): Promise<anchorEleType[]>{
+  44 |       const menusItemsLocators = await this.menuLinksLocator.all();
+  45 |       const menuListDataActual: anchorEleType[] = await extractAnchorElementsData(menusItemsLocators);
+  46 | 
+  47 |       return menuListDataActual;
+  48 | 
+  49 |     }
+  50 | 
+  51 |     async clickLoginOrSignupBtn(){
+  52 |         console.log(await this.loginBtnLocator.getAttribute('href'));
+> 53 |         await this.loginBtnLocator.click();
+     |                                    ^ Error: locator.click: Test ended.
+  54 |         await this.page.waitForLoadState('load');
+  55 |         await expect(this.loginPageSignInLocator).toBeVisible();
+  56 |     }
+  57 | 
+  58 |     async clickDarkModeBtn(){
+  59 |       await this.darkModeBtnLocator.click();
+  60 |     }
+  61 | 
+  62 |     async clickLightModeBtn(){
+  63 |       await this.lightModeBtnLocator.click();
+  64 |     }
+  65 | 
+  66 |     async getPageBackgroundColor(){
+  67 |       return await getComputedStyle(this.fullPageLocator, 'background-color');
+  68 |     }
+  69 | 
+  70 |     
+  71 | 
+  72 | 
+  73 |     
+  74 |     
+  75 | 
+  76 | 
+  77 |     
+  78 |      
+  79 | 
+  80 | }
+```

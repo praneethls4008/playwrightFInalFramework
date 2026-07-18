@@ -1,0 +1,24 @@
+{
+  "eslint.enable": true,
+  "eslint.run": "onType",
+
+  "eslint.validate": [
+    "javascript",
+    "javascriptreact",
+    "typescript",
+    "typescriptreact"
+  ],
+
+  "eslint.lintTask.enable": true,
+
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  },
+
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "typescript.enablePromptUseWorkspaceTsdk": true,
+
+  "typescript.validate.enable": true,
+
+  "problems.showCurrentInStatus": true
+}

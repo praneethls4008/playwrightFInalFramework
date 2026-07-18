@@ -1,0 +1,7 @@
+page.goto: Timeout 3000ms exceeded.
+Call log:
+[2m  - navigating to "https://qaplayground.com/bank/login", waiting until "domcontentloaded"[22m
+
+    at navigateToUrl (/home/praneethreddy/Projects/playwright/playwrightFInalFramework/tests/ui/full-page-tests/fullPageRegression.spec.ts:19:33)
+    at /home/praneethreddy/Projects/playwright/playwrightFInalFramework/tests/ui/full-page-tests/fullPageRegression.spec.ts:54:19
+    at /home/praneethreddy/Projects/playwright/playwrightFInalFramework/tests/ui/full-page-tests/fullPageRegression.spec.ts:53:11

@@ -1,0 +1,11 @@
+locator.click: Timeout 1000ms exceeded.
+Call log:
+[2m  - waiting for getByTestId('header').locator('//btn[@class="arrow"]').first()[22m
+
+    at HeaderComponent.openSubnav (/home/praneethreddy/Projects/playwright/playwrightFInalFramework/src/component/headerComponent.ts:25:51)
+    at /home/praneethreddy/Projects/playwright/playwrightFInalFramework/tests/ui/helper/headerComponentTests.ts:15:29
+    at validateHeader (/home/praneethreddy/Projects/playwright/playwrightFInalFramework/tests/ui/helper/headerComponentTests.ts:14:5)
+    at /home/praneethreddy/Projects/playwright/playwrightFInalFramework/tests/ui/full-page-tests/fullPageRegression.spec.ts:60:11
+    at /home/praneethreddy/Projects/playwright/playwrightFInalFramework/tests/ui/helper/runComponent.ts:14:7
+    at runComponentStep (/home/praneethreddy/Projects/playwright/playwrightFInalFramework/tests/ui/helper/runComponent.ts:13:7)
+    at /home/praneethreddy/Projects/playwright/playwrightFInalFramework/tests/ui/full-page-tests/fullPageRegression.spec.ts:55:7

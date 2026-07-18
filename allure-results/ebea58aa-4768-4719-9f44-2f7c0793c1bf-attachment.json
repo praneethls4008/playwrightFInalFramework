@@ -1,0 +1,8 @@
+{
+  "requestedUrl": "https://letcode.in/home",
+  "finalUrl": "https://letcode.in/home",
+  "finalStatus": 200,
+  "is2xx": true,
+  "hasRedirect": false,
+  "redirectChain": []
+}
