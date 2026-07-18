@@ -17,7 +17,7 @@ for (const pageName of PAGES_NAMES) {
 function createFullPageRegressionTest(pageName: PAGE) {
   const fullUrl = getFullUrl(pageName);
   const pageType = getPageType(pageName);
-  const navigationSuccessful = false;
+  let navigationSuccessful = false;
 
    
   test(
@@ -32,21 +32,21 @@ function createFullPageRegressionTest(pageName: PAGE) {
       //Navigation validation
 
       await test.step(
-        "Navigate and validate response",
+        "Navigate to URL",
         async() => {
           await navigateToUrl(page, fullUrl);
-          const currentUrl = page.url().toLowerCase();
-          expect(currentUrl).toContain(fullUrl.toLowerCase());
-          
         }
       );
 
 
       //Skips component tets if navigation of url is failed(statuscode error or redirect of page)
-      // eslint-disable-next-line playwright/no-skipped-test
-      test.skip(
-          !navigationSuccessful,
-          'Component validations were skipped because navigation was not a direct 2xx response.'
+      await test.step(
+          'Page redirection check',
+          () => {
+            const currentUrl = page.url().toLowerCase();
+            navigationSuccessful = currentUrl.includes(fullUrl.toLowerCase());
+            expect(navigationSuccessful).toBeTruthy();
+          }
         );
 
       

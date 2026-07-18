@@ -31,7 +31,7 @@ export async function validateQAPlaygroundHeader(page: Page, pageType: PageType,
       async() => {
         
         const actualLoginBtnHref = await headerComponent.getLoginOrSignupBtnHref();
-        expect.soft(actualLoginBtnHref, 'Login btn Href Check').toBe(QAPlaygroundHeaderData.loginBtnHref+"ddd");
+        expect.soft(actualLoginBtnHref, 'Login btn Href Check').toBe(QAPlaygroundHeaderData.loginBtnHref);
         
       }
     )
