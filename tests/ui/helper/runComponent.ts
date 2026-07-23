@@ -1,5 +1,5 @@
 import { expect, Page, test, TestInfo  } from "@playwright/test";
-import { normalizeError } from "../../../src/helper/errorResolver";
+import { normalizeError } from "../../../src/ui/helper/errorResolver";
 import * as allure from "allure-js-commons";
 
 export async function runComponentStep(

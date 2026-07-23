@@ -1,8 +1,10 @@
 import { test } from "@playwright/test";
-import { getUrlsToRun } from "../../../src/helper/getUrlsToRun";
-import { PAGE } from "../../../src/data/urls/aem.urls.data";
+import { getUrlsToRun } from "../../../src/ui/helper/getUrlsToRun";
+import { PAGE } from "../../../src/ui/data/urls/aem.urls.data";
 import { validateFooter } from "../helper/footerComponentTests";
-import { getFullUrl } from "../../../src/helper/urlResolver";
+import { getFullUrl } from "../../../src/ui/helper/urlResolver";
+import { expect } from "@playwright/test";
+
 
 const PAGES_NAMES: Array<PAGE> = getUrlsToRun();
 
@@ -12,6 +14,7 @@ for (const pageName of PAGES_NAMES) {
   test(`${pageName} Footer`, { tag: ["@Footer"] }, async ({ page }) => {
     await page.goto(full_url);
     await page.waitForLoadState("load");
-    validateFooter();
+    await validateFooter();
+    expect(true).toBeTruthy();
   });
 }

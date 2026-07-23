@@ -1,5 +1,5 @@
 import { Page } from "@playwright/test";
-import { PAGE, PageType } from "../../../../src/data/urls/aem.urls.data";
+import { PAGE, PageType } from "../../../../src/ui/data/urls/aem.urls.data";
 import { commonHeaderComponentTests } from "./commonHeaderComponentTests";
 import { validateQAPlaygroundHeader } from "./playGroundHeaderComponentTests";
 

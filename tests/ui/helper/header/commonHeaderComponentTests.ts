@@ -1,8 +1,7 @@
-import { HeaderComponent, HeaderDataType } from "../../../../src/component/header/HeaderComponent";
-import { test } from "../../../../src/fixtures/baseFixture";
-import { expect, Page } from "@playwright/test";
-import { PAGE, PageType } from "../../../../src/data/urls/aem.urls.data";
-import { loadData } from "../../../../src/helper/test-data-helper/headerDataHelper";
+import { HeaderComponent, HeaderDataType } from "../../../../src/ui/component/header/HeaderComponent";
+import { expect, Page, test } from "@playwright/test";
+import { PAGE, PageType } from "../../../../src/ui/data/urls/aem.urls.data";
+import { loadData } from "../../../../src/ui/helper/test-data-helper/headerDataHelper";
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export async function commonHeaderComponentTests(page: Page, pageType: PageType, pageName: PAGE){

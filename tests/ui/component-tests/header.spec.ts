@@ -1,8 +1,8 @@
 import { test } from "@playwright/test";
 import { validateHeader } from "../helper/header/headerComponentTests";
-import { PAGE } from "../../../src/data/urls/aem.urls.data"
-import { getUrlsToRun } from "../../../src/helper/getUrlsToRun";
-import { getFullUrl, getPageType } from "../../../src/helper/urlResolver";
+import { PAGE } from "../../../src/ui/data/urls/aem.urls.data"
+import { getUrlsToRun } from "../../../src/ui/helper/getUrlsToRun";
+import { getFullUrl, getPageType } from "../../../src/ui/helper/urlResolver";
 
 
 const PAGES_NAMES:Array<PAGE> = getUrlsToRun();

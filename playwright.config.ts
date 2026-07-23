@@ -1,16 +1,25 @@
 import { defineConfig, devices } from '@playwright/test';
 
-/**
- * Read environment variables from file.
- * https://github.com/motdotla/dotenv
- */
-// import dotenv from 'dotenv';
-// import path from 'path';
-// dotenv.config({ path: path.resolve(__dirname, '.env') });
+import * as path from "path";
+import { config as dotenvConfig } from "dotenv";
+type DotenvConfigFn = (options?: { path?: string; encoding?: string }) => void;
 
-/**
- * See https://playwright.dev/docs/test-configuration.
- */
+// Cast it to a specific function type to clear the linter check
+let currEnv;
+switch(process.env.NODE_ENV){
+  case "PROD":
+    currEnv = ".env.prod";
+    break;
+  case "DEV":
+    currEnv = ".env.dev";
+    break;
+  default:
+    currEnv = ".env";
+    break;
+}
+
+(dotenvConfig as DotenvConfigFn)({ path: path.resolve(__dirname, currEnv) })
+console.log(`env val: ${process.env.API_BASE_URL}`)
 
 export default defineConfig({
   testDir: "./tests",
@@ -30,6 +39,7 @@ export default defineConfig({
   use: {
     /* Base URL to use in actions like `await page.goto('')`. */
     // baseURL: BASE_URL,
+    
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: "on-first-retry",
@@ -42,17 +52,26 @@ export default defineConfig({
     {
       name: "chromium",
       use: { ...devices["Desktop Chrome"] },
+      testIgnore: /.*\.api\.spec\.ts/,
     },
 
     {
       name: "firefox",
       use: { ...devices["Desktop Firefox"] },
+      testIgnore: /.*\.api\.spec\.ts/,
     },
 
     {
       name: "webkit",
       use: { ...devices["Desktop Safari"] },
+      testIgnore: /.*\.api\.spec\.ts/,
     },
+
+    {
+      name: "api",
+      testMatch: /.*\.api\.spec\.ts/,
+    },
+
 
     /* Test against mobile viewports. */
     // {

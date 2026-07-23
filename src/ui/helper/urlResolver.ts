@@ -1,4 +1,4 @@
-import { PAGE, URLS, URL_CONFIG } from "../data/urls/aem.urls.data";
+import { PAGE, URLS } from "../data/urls/aem.urls.data";
 
 export const getFullUrl = (pageName: PAGE)=>{
     let fullUrl = getFullPath(pageName)
@@ -11,7 +11,7 @@ export const getFullUrl = (pageName: PAGE)=>{
         if(index>0){
             fullUrl = `${fullUrl}&`;
         }else{
-            fullUrl = `${fullUrl}\?`;
+            fullUrl = `${fullUrl}\\?`;
         }
         fullUrl = `${fullUrl}${paramName}=${paramValue}`;
         index++;

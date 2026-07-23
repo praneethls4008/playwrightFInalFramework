@@ -11,7 +11,11 @@
     "test:headed": "playwright test --headed",
     "test:debug": "playwright test --debug",
     "validate": "npm run lint && npm run typecheck",
-    "validate:test": "npm run lint && npm run typecheck && playwright test"
+    "validate:test": "npm run lint && npm run typecheck && playwright test",
+
+    "api:prod": "cross-env NODE_ENV=prod npx playwright test --grep 'getProductById'",
+    "api:pa": "cross-env NODE_ENV=pa npx playwright test --grep 'getProductById'",
+    "api:dev": "cross-env NODE_ENV=dev npx playwright test --grep 'getProductById'"
   },
   "keywords": [],
   "author": "",
@@ -27,5 +31,10 @@
     "eslint-plugin-playwright": "^2.10.5",
     "typescript": "^6.0.3",
     "typescript-eslint": "^8.64.0"
+  },
+  "dependencies": {
+    "cross-env": "^10.1.0",
+    "dotenv": "^17.4.2",
+    "zod": "^4.4.3"
   }
 }
