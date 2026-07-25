@@ -1,5 +1,5 @@
 import { Locator } from "@playwright/test";
-import { anchorEleType } from "../../../../tests/ui/types/commonElementTypes";
+import { anchorEleType } from "../../types/commonElementTypes";
 
   export async function extractAnchorElementsData(locators: Locator[]){
         const anchorElements: anchorEleType[] = [];

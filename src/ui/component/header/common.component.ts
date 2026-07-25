@@ -1,5 +1,5 @@
 import {Locator, Page} from '@playwright/test';
-import { anchorEleType } from '../../../../tests/ui/types/commonElementTypes';
+import { anchorEleType } from '../../types/commonElementTypes';
 
 export type HeaderDataType = Array<anchorEleType>;
 

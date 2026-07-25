@@ -1,4 +1,4 @@
-import { HeaderDataType } from "../../../../tests/ui/types/headerType";
+import { HeaderDataType } from "../../../../src/ui/types/headerType";
 
 export const OrganicHeaderData:HeaderDataType = {
     testName: 'Organic Header Validation',

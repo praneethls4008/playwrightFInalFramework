@@ -1,4 +1,4 @@
-import { HeaderDataType } from "../../types/headerType";
+import { HeaderDataType } from "../../../../src/ui/types/headerType";
 import { PageType } from "../../../../src/ui/constants/urls/aem.data";
 import { OrganicHeaderData } from "../../../../resources/test-data/ui/header/oragnicHeader.data";
 import { LPHeaderData } from "../../../../resources/test-data/ui/header/lpHeader.data";

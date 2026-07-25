@@ -1,5 +1,5 @@
 import {Locator, Page} from '@playwright/test';
-import { anchorEleType } from '../../../../tests/ui/types/commonElementTypes';
+import { anchorEleType } from '../../types/commonElementTypes';
 import { extractAnchorElementsData } from '../../helper/actions/getAnchorEleData';
 import { getComputedStyle } from '../../helper/actions/getComputedStyles';
 
