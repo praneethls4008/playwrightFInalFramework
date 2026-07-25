@@ -1,4 +1,4 @@
-import { PAGE, URLS } from "../data/urls/aem.urls.data";
+import { PAGE, URLS } from "../constants/urls/aem.data";
 import { RUN_ALL, URLS_TO_RUN } from "../../../run_these_urls";
 
 export const getUrlsToRun = (): Array<PAGE> => {

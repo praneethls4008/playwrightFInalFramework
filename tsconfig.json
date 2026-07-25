@@ -22,7 +22,12 @@
     "playwright.config.ts",
     "run_these_urls.ts",
     "src/**/*.ts",
-    "tests/**/*.ts"
+    "tests/**/*.ts",
+    "config/**/*.ts",
+    "resources/**/*.ts",
+    "scripts/**/*.ts",
+    "storage-states/**/*.ts",
+    "setup/**/*.ts"
   ],
 
   "exclude": [

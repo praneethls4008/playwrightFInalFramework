@@ -1,4 +1,4 @@
-import { PAGE, URLS } from "../data/urls/aem.urls.data";
+import { PAGE, URLS } from "../constants/urls/aem.data";
 
 export const getFullUrl = (pageName: PAGE)=>{
     let fullUrl = getFullPath(pageName)

@@ -13,9 +13,11 @@
     "validate": "npm run lint && npm run typecheck",
     "validate:test": "npm run lint && npm run typecheck && playwright test",
 
-    "api:prod": "cross-env NODE_ENV=prod npx playwright test --grep 'getProductById'",
-    "api:pa": "cross-env NODE_ENV=pa npx playwright test --grep 'getProductById'",
-    "api:dev": "cross-env NODE_ENV=dev npx playwright test --grep 'getProductById'"
+    "ui:prod": "cross-env NODE_ENV=PROD playwright test --project=ui-chromium",
+    "ui:dev": "cross-env NODE_ENV=DEV playwright test  --project=ui-chromium",
+
+    "api:prod": "cross-env NODE_ENV=PROD playwright test --project=api",
+    "api:dev": "cross-env NODE_ENV=DEV playwright test  --project=api"
   },
   "keywords": [],
   "author": "",

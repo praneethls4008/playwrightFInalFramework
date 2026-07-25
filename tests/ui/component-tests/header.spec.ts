@@ -1,6 +1,6 @@
 import { test } from "@playwright/test";
 import { validateHeader } from "../helper/header/headerComponentTests";
-import { PAGE } from "../../../src/ui/data/urls/aem.urls.data"
+import { PAGE } from "../../../src/ui/constants/urls/aem.data";
 import { getUrlsToRun } from "../../../src/ui/helper/getUrlsToRun";
 import { getFullUrl, getPageType } from "../../../src/ui/helper/urlResolver";
 

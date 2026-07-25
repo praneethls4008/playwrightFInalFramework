@@ -1,7 +1,7 @@
 import test, { expect, Page } from "@playwright/test";
-import { PAGE, PageType } from "../../../../src/ui/data/urls/aem.urls.data";
-import { QAPlaygroundHeaderComponent } from "../../../../src/ui/component/header/QAPlaygroundHeaderComponent";
-import { QAPlaygroundHeaderData } from "../../../../src/ui/data/component/header/qaPlaygroundHeader.data";
+import { PAGE, PageType } from "../../../../src/ui/constants/urls/aem.data";
+import { QAPlaygroundHeaderComponent } from "../../../../src/ui/component/header/qa-playground.component";
+import { QAPlaygroundHeaderData } from "../../../../resources/test-data/ui/header/qaPlaygroundHeader.data";
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export async function validateQAPlaygroundHeader(page: Page, pageType: PageType, pageName: PAGE) {

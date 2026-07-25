@@ -1,36 +1,16 @@
 import { defineConfig, devices } from '@playwright/test';
-
-import * as path from "path";
-import { config as dotenvConfig } from "dotenv";
-type DotenvConfigFn = (options?: { path?: string; encoding?: string }) => void;
-
-// Cast it to a specific function type to clear the linter check
-let currEnv;
-switch(process.env.NODE_ENV){
-  case "PROD":
-    currEnv = ".env.prod";
-    break;
-  case "DEV":
-    currEnv = ".env.dev";
-    break;
-  default:
-    currEnv = ".env";
-    break;
-}
-
-(dotenvConfig as DotenvConfigFn)({ path: path.resolve(__dirname, currEnv) })
-console.log(`env val: ${process.env.API_BASE_URL}`)
+import { env } from './config/environment.config';
 
 export default defineConfig({
   testDir: "./tests",
   /* Run tests in files in parallel */
   fullyParallel: true,
   /* Fail the build on CI if you accidentally left test.only in the source code. */
-  forbidOnly: !!process.env.CI,
+  forbidOnly: !!env.CI,
   /* Retry on CI only */
-  retries: process.env.CI ? 2 : 0,
+  retries: env.CI ? 2 : 0,
   /* Opt out of parallel tests on CI. */
-  workers: process.env.CI ? 1 : undefined,
+  workers: env.CI ? 1 : undefined,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: [
     ["html"], // Optional: standard terminal output
@@ -50,26 +30,46 @@ export default defineConfig({
   /* Configure projects for major browsers */
   projects: [
     {
-      name: "chromium",
+      name: "ui-chromium",
+      testDir: './tests/ui',
+      testMatch: /.*\.spec\.ts/,
       use: { ...devices["Desktop Chrome"] },
-      testIgnore: /.*\.api\.spec\.ts/,
     },
 
     {
-      name: "firefox",
+      name: "ui-firefox",
+      testDir: './tests/ui',
+      testMatch: /.*\.spec\.ts/,
       use: { ...devices["Desktop Firefox"] },
-      testIgnore: /.*\.api\.spec\.ts/,
     },
 
     {
-      name: "webkit",
+      name: "ui-webkit",
+      testDir: './tests/ui',
+      testMatch: /.*\.spec\.ts/,
       use: { ...devices["Desktop Safari"] },
-      testIgnore: /.*\.api\.spec\.ts/,
+    },
+
+    {
+      name: 'e2e-chromium',
+      testDir: './tests/e2e',
+      testMatch: /.*\.spec\.ts/,
+      use: {
+        ...devices['Desktop Chrome'],
+      },
     },
 
     {
       name: "api",
-      testMatch: /.*\.api\.spec\.ts/,
+      testDir: './tests/api',
+      testMatch: /.*\.spec\.ts/,
+      use: {
+        baseURL: env.API_BASE_URL,
+        extraHTTPHeaders: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        }
+      }
     },
 
 
@@ -98,6 +98,6 @@ export default defineConfig({
   // webServer: {
   //   command: 'npm run start',
   //   url: 'http://localhost:3000',
-  //   reuseExistingServer: !process.env.CI,
+  //   reuseExistingServer: !env.CI,
   // },
 });

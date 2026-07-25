@@ -1,7 +1,7 @@
-import { HeaderComponent, HeaderDataType } from "../../../../src/ui/component/header/HeaderComponent";
+import { HeaderComponent, HeaderDataType } from "../../../../src/ui/component/header/common.component";
 import { expect, Page, test } from "@playwright/test";
-import { PAGE, PageType } from "../../../../src/ui/data/urls/aem.urls.data";
-import { loadData } from "../../../../src/ui/helper/test-data-helper/headerDataHelper";
+import { PAGE, PageType } from "../../../../src/ui/constants/urls/aem.data"
+import { loadData } from "../data-helpers/headerDataHelper";
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export async function commonHeaderComponentTests(page: Page, pageType: PageType, pageName: PAGE){

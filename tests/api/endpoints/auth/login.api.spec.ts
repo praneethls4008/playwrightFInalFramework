@@ -1,5 +1,5 @@
 import { expect } from "@playwright/test";
-import { test } from "../../../../src/api/fixtures/AuthFixture";
+import { test } from "../../../../src/api/fixtures/api.fixture";
 import { authSchemaValidation, profileSchemaValidation } from "../../../../src/api/validators/product/auth.validator";
 
 

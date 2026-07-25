@@ -1,6 +1,6 @@
 import { test } from "@playwright/test";
 import { getUrlsToRun } from "../../../src/ui/helper/getUrlsToRun";
-import { PAGE } from "../../../src/ui/data/urls/aem.urls.data";
+import { PAGE } from "../../../src/ui/constants/urls/aem.data";
 import { validateFooter } from "../helper/footerComponentTests";
 import { getFullUrl } from "../../../src/ui/helper/urlResolver";
 import { expect } from "@playwright/test";

@@ -1,4 +1,4 @@
-import { PAGE } from "./src/ui/data/urls/aem.urls.data";
+import { PAGE } from "./src/ui/constants/urls/aem.data";
 
 
 //RUN ALL PAGES PRESENT IN "src/data/urls/aem.urls.data.ts"
