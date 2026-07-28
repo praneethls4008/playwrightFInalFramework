@@ -32,8 +32,6 @@ export class Auth{
       `GET ${Auth.profilePath}`,
       async () => {
 
-        console.log('acessToken: ' + accessToken);
-
         return this.request.get(Auth.profilePath, {
           headers: {
             Authorization: `Bearer ${accessToken}`,
