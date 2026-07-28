@@ -13,10 +13,8 @@ test.describe(
 
         const response = await productApi.getProduct(id);
         expect(response.status(), 'Status 200 Check').toBe(200);
-        // const responseBody =  (await response.json()) as ProductType;
         const responseBody: unknown = await response.json();
         productValidator(responseBody);
-        console.log()
         expect(responseBody.id).toBe(id);
       
       }

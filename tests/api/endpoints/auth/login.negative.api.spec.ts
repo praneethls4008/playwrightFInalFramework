@@ -16,7 +16,6 @@ test.describe(
         const response = await authApi.login(email, password);
         expect(response.status()).toBe(401);
         const responseBody = (await response.json()) as { message: string, statusCode: number } ;
-        console.log(responseBody);
         expect(responseBody.message).toBe('Unauthorized');
 
 

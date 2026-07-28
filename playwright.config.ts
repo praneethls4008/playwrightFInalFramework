@@ -16,31 +16,71 @@ export default defineConfig({
   /* Opt out of parallel tests on CI. */
   workers: env.CI ? 1 : undefined,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
-  reporter: [
-    ["html"], // Optional: standard terminal output
-    ['allure-playwright',
-          {
-            resultsDir: allureResultsDir,
-            detail: true,
-            suiteTitle: true,
+  reporter: env.CI
+    ? [
+      // Jenkins console output
+      ['line'],
 
-            environmentInfo: {
-              os_platform: os.platform(),
-              os_release: os.release(),
-              os_version: os.version(),
-              node_version: process.version,
-              test_environment:
-                process.env.TEST_ENVIRONMENT ?? 'prod',
-              jenkins_build:
-                process.env.BUILD_NUMBER ?? 'local',
-            },
+      // Used to merge all shard results into one Playwright HTML report
+      ['blob'],
+
+      // Generates raw Allure results for each shard
+      [
+        'allure-playwright',
+        {
+          resultsDir: allureResultsDir,
+          detail: true,
+          suiteTitle: true,
+
+          environmentInfo: {
+            os_platform: os.platform(),
+            os_release: os.release(),
+            os_version: os.version(),
+            node_version: process.version,
+            test_environment: env.REGION,
+            jenkins_build: env.BUILD_NUMBER,
           },
-        ], //allure
-  ] /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */,
+        },
+      ],
+    ]
+    : [
+      // Local terminal output
+      ['line'],
+
+      // Local Playwright HTML report
+      [
+        'html',
+        {
+          outputFolder: 'playwright-report',
+          open: 'never',
+        },
+      ],
+
+      // Local Allure results
+      [
+        'allure-playwright',
+        {
+          resultsDir: allureResultsDir,
+          detail: true,
+          suiteTitle: true,
+
+          environmentInfo: {
+            os_platform: os.platform(),
+            os_release: os.release(),
+            os_version: os.version(),
+            node_version: process.version,
+            test_environment:
+              process.env.TEST_ENVIRONMENT ?? 'local',
+          },
+        },
+      ],
+    ],
+
+
   use: {
     /* Base URL to use in actions like `await page.goto('')`. */
     // baseURL: BASE_URL,
-    
+
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: "on-first-retry",

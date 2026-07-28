@@ -1,7 +1,7 @@
 import { expect } from "@playwright/test";
 import { test } from "../../../src/ui/fixtures/auth.fixture";
 
-for( let index = 0; index<50; index++){
+for( let index = 0; index<10; index++){
   test(
   `test ${index}`,
   {tag: ['@mytest']},

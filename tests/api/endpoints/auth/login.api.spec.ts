@@ -22,7 +22,6 @@ test.describe(
             const response = await authApi.login(email, password);
             expect(response.status()).toBe(201);
             const responseBody: unknown = await response.json();
-            console.log(responseBody);
 
             authSchemaValidation(responseBody);
             accessToken = responseBody.access_token;
@@ -35,7 +34,6 @@ test.describe(
             const response = await authApi.profile(accessToken);
             expect(response.status()).toBe(200);
             const responseBody:unknown = await response.json();
-            console.log(responseBody);
             profileSchemaValidation(responseBody);
             expect(responseBody.email).toBe(email);
             expect(responseBody.password).toBe(password);

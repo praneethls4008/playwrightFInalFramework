@@ -17,7 +17,10 @@
     "ui:dev": "cross-env NODE_ENV=DEV playwright test  --project=ui-chromium",
 
     "api:prod": "cross-env NODE_ENV=PROD playwright test --project=api",
-    "api:dev": "cross-env NODE_ENV=DEV playwright test  --project=api"
+    "api:dev": "cross-env NODE_ENV=DEV playwright test  --project=api",
+
+    "test:prod": "cross-env NODE_ENV=PROD npm run ui:prod && npm run api:prod",
+    "test:dev": "cross-env NODE_ENV=DEV npm run ui:prod && npm run api:prod"
   },
   "keywords": [],
   "author": "",
