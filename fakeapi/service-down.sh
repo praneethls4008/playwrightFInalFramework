@@ -1,0 +1,1 @@
+docker compose -f /home/praneethreddy/Projects/fake-api-backend/docker-compose.yml down
