@@ -1,0 +1,89 @@
+pipeline{
+    agent any
+    
+    environment{
+         //Overrides the default path so Playwright saves to our persistent Docker volume
+        PLAYWRIGHT_BROWSERS_PATH = '/var/playwright-browsers'
+    }
+    
+    tools {
+        // Tells Jenkins to inject the global NodeJS tool setup from Step 1 into our PATH
+        nodejs 'NodeJS'
+    }
+    
+    stages {
+        
+        stage('Clean Workspace') {
+            steps {
+                // Automatically wipes out old corrupted git metadata before cloning
+                cleanWs()
+            }
+        }
+        
+        stage('Checkout Code') {
+            steps {
+                // Fetches code from your specific Git repository
+                git branch: 'main', url: 'https://github.com/praneethls4008/playwrightFInalFramework'
+            }
+        }
+        
+        stage('Install NPM Dependencies') {
+            steps {
+                // Installs package.json items
+                sh 'npm ci'
+            }
+        }
+        
+        stage('Install Playwright Browsers & Linux OS Deps') {
+            //Tells Playwright to install missing browsers (Chromium/Firefox)
+            // AND download underlying OS libraries (like libgtk, NSS, etc.) directly into the runner environment
+            steps{
+                sh 'npx playwright install'
+            }
+        }
+        
+        stage('Run Playwrihgt Shards in Parallel') {
+            
+            parallel{
+                stage('Shard 1 of 3'){
+                    steps {
+                        sh 'npm run ui:prod -- --shard=1/3 --grep="@mytest" --reporter=blob --output=test-results/shard1'
+                    }
+                }
+                stage('Shard 2 of 3'){
+                    steps {
+                        sh 'npm run ui:prod -- --shard=2/3 --grep="@mytest" --reporter=blob --output=test-results/shard2'
+                    }
+                }
+                stage('Shard 3 of 3'){
+                    steps {
+                        sh 'npm run ui:prod -- --shard=3/3 --grep="@mytest" --reporter=blob --output=test-results/shard3'
+                    }
+                }
+            }//parallel-shards
+            
+             
+            stage('Merge Test Reports') {
+                steps {
+                    // Combines all individual binary blobs from the workspace into a single unified HTML folder
+                    sh 'npx playwright merge-reports --reporter=html ./blob-report'
+                }
+            }
+            
+        }
+    }//stages-end
+    
+    post {
+        always{
+            publishHTML(target: [
+                allowMissing: false,
+                alwaysLinkToLastBuild: true,
+                keepAll: true,
+                reportDir: 'playwright-report',
+                reportFiles: 'index.html',
+                reportName: 'Playwright HTML Report'
+            ])
+        }
+    }
+    
+}

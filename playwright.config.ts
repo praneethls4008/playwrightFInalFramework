@@ -1,5 +1,9 @@
 import { defineConfig, devices } from '@playwright/test';
 import { env } from './config/environment.config';
+import * as os from 'node:os';
+
+const allureResultsDir =
+  process.env.ALLURE_RESULTS_DIR ?? 'allure-results';
 
 export default defineConfig({
   testDir: "./tests",
@@ -14,7 +18,24 @@ export default defineConfig({
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: [
     ["html"], // Optional: standard terminal output
-    ["allure-playwright", { outputFolder: "allure-results" }], //allure
+    ['allure-playwright',
+          {
+            resultsDir: allureResultsDir,
+            detail: true,
+            suiteTitle: true,
+
+            environmentInfo: {
+              os_platform: os.platform(),
+              os_release: os.release(),
+              os_version: os.version(),
+              node_version: process.version,
+              test_environment:
+                process.env.TEST_ENVIRONMENT ?? 'prod',
+              jenkins_build:
+                process.env.BUILD_NUMBER ?? 'local',
+            },
+          },
+        ], //allure
   ] /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */,
   use: {
     /* Base URL to use in actions like `await page.goto('')`. */
