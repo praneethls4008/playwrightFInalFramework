@@ -28,7 +28,7 @@ export async function createStorageState(page: Page, testInfo: TestInfo, userTyp
 
     await page.getByTestId('login-submit-btn').click();
 
-    await expect(page.getByRole('button', {name: 'Logout'})).toBeEnabled();
+    await expect(page.getByRole('button', {name: 'Logout',})).toBeVisible({timeout: 10000});
 
     const fileName = getStorageStateFileName(testInfo, userType);
     await page.context().storageState({

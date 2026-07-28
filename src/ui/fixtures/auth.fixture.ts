@@ -72,7 +72,7 @@ export const test = base.extend<TestFixtures, WorkerFixtures>({
         const loginPage = await context.newPage();
         
         await createStorageState(loginPage, testInfo, 'ADMIN');
-        adminAuthExpiry.time = currTime + (10 * 60 * 1000);
+        adminAuthExpiry.time = currTime + (29 * 24 * 60 * 60 * 1000);
         console.log(`[Shard ${executionMetaData.currentShard}/${executionMetaData.totalShards} Worker ${testInfo.workerIndex}] ADMIN login refreshed.`);
         
         await use(loginPage);
