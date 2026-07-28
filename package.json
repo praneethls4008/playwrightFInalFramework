@@ -12,13 +12,10 @@
     "test:debug": "playwright test --debug",
     "validate": "npm run lint && npm run typecheck",
     "validate:test": "npm run lint && npm run typecheck && playwright test",
-
     "ui:prod": "cross-env NODE_ENV=PROD playwright test --project=ui-chromium",
     "ui:dev": "cross-env NODE_ENV=DEV playwright test  --project=ui-chromium",
-
     "api:prod": "cross-env NODE_ENV=PROD playwright test --project=api",
     "api:dev": "cross-env NODE_ENV=DEV playwright test  --project=api",
-
     "test:prod": "cross-env NODE_ENV=PROD npm run ui:prod && npm run api:prod",
     "test:dev": "cross-env NODE_ENV=DEV npm run ui:prod && npm run api:prod"
   },
@@ -30,6 +27,7 @@
     "@eslint/js": "^10.0.1",
     "@playwright/test": "^1.61.1",
     "@types/node": "^26.1.1",
+    "allure": "^3.14.3",
     "allure-commandline": "^2.43.0",
     "allure-playwright": "^3.10.2",
     "eslint": "^10.7.0",
