@@ -7,6 +7,12 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "typecheck": "tsc --noEmit",
+
+    "gen-key": "tsx src/shared/utilities/crypto/generate-key.utility.ts",
+    "encrypt-secret": "tsx src/shared/utilities/crypto/encrypt-secret.utility.ts",
+    
+    "allure": "npx allure serve allure-results",
+    
     "test": "playwright test",
     "test:headed": "playwright test --headed",
     "test:debug": "playwright test --debug",
@@ -26,12 +32,14 @@
   "devDependencies": {
     "@eslint/js": "^10.0.1",
     "@playwright/test": "^1.61.1",
-    "@types/node": "^26.1.1",
+    "@types/node": "^26.1.2",
     "allure": "^3.14.3",
     "allure-commandline": "^2.43.0",
     "allure-playwright": "^3.10.2",
     "eslint": "^10.7.0",
     "eslint-plugin-playwright": "^2.10.5",
+    "ts-node": "^10.9.2",
+    "tsx": "^4.23.1",
     "typescript": "^6.0.3",
     "typescript-eslint": "^8.64.0"
   },

@@ -53,6 +53,11 @@ const EnvironmentSchema = z.object({
     .transform(value => value === 'true')
     .default(false),
 
+  CRYPTO_SECRET_KEY: z
+    .string()
+    .length(64, { message: "CRYPTO_SECRET_KEY must be exactly 64 characters long (32 bytes)" })
+    .regex(/^[0-9a-fA-F]+$/, { message: "CRYPTO_SECRET_KEY must be a valid hexadecimal string" }),
+
   ADMIN_USERNAME: z.string(),
   ADMIN_PASSWORD: z.string(),
   USER_USERNAME: z.string(),

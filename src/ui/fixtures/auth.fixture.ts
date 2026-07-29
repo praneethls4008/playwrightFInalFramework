@@ -41,7 +41,7 @@ export const test = base.extend<TestFixtures, WorkerFixtures>({
         context = await browser.newContext();
         const loginPage = await context.newPage();
         
-        await createStorageState(loginPage, testInfo, 'USER');
+        await createStorageState(test, loginPage, testInfo, 'USER');
         userAuthExpiry.time = currTime + (10 * 60 * 1000);
         console.log(`[Shard ${executionMetaData.currentShard}/${executionMetaData.totalShards} Worker ${testInfo.workerIndex}] USER login refreshed.`);
         
@@ -71,7 +71,7 @@ export const test = base.extend<TestFixtures, WorkerFixtures>({
         context = await browser.newContext({});
         const loginPage = await context.newPage();
         
-        await createStorageState(loginPage, testInfo, 'ADMIN');
+        await createStorageState(test, loginPage, testInfo, 'ADMIN');
         adminAuthExpiry.time = currTime + (29 * 24 * 60 * 60 * 1000);
         console.log(`[Shard ${executionMetaData.currentShard}/${executionMetaData.totalShards} Worker ${testInfo.workerIndex}] ADMIN login refreshed.`);
         
