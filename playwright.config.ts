@@ -3,7 +3,7 @@ import { env } from './config/environment.config';
 import * as os from 'node:os';
 
 const allureResultsDir =
-  process.env.ALLURE_RESULTS_DIR ?? 'allure-results';
+  env.ALLURE_RESULTS_DIR ?? 'allure-results';
 
 export default defineConfig({
   testDir: "./tests",

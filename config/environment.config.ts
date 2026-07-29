@@ -44,6 +44,7 @@ if (!isCI) {
 const EnvironmentSchema = z.object({
   UI_BASE_URL: z.url().optional(),
   API_BASE_URL: z.url(),
+  ALLURE_RESULTS_DIR: z.string(),
 
   API_USERNAME: z.string().min(1).optional(),
   API_PASSWORD: z.string().min(1).optional(),
