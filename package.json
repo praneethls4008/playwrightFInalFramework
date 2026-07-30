@@ -23,7 +23,11 @@
     "test:prod": "cross-env NODE_ENV=PROD playwright test --project=ui-chromium --project=api",
     "test:dev": "cross-env NODE_ENV=DEV playwright test --project=ui-chromium --project=api",
     "test:update-visual-snapshots": "cross-env NODE_ENV=PROD playwright test --project=visual-chromium --update-snapshots",
-    "test:visual": "cross-env NODE_ENV=PROD playwright test --project=visual-chromium"
+    "test:visual": "cross-env NODE_ENV=PROD playwright test --project=visual-chromium",
+    "update:visual-snapshots": "cross-env CI=true NODE_ENV=PROD playwright test --project=visual-chromium --update-snapshots",
+    "test:ci": "cross-env CI=true NODE_ENV=PROD playwright test --project=ui-chromium --project=visual-chromium",
+    "docker:build": "docker build --build-arg PLAYWRIGHT_VERSION=1.61.1 -t playwright-final-framework:local .",
+    "docker:run": "docker run --rm --init --ipc=host --env-file env/.env.prod -v \"$PWD/test-results:/app/test-results\" -v \"$PWD/allure-results:/app/allure-results\" -v \"$PWD/blob-report:/app/blob-report\" -v \"$PWD/storage-states:/app/storage-states\" playwright-final-framework:local"
   },
   "keywords": [],
   "author": "",

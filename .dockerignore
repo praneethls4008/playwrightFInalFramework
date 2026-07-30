@@ -1,0 +1,24 @@
+.git
+.github
+.vscode
+.idea
+
+node_modules
+npm-debug.log*
+*.log
+
+playwright-report
+test-results
+allure-results
+blob-report
+storage-states
+playwright/.cache
+playwright/.auth
+
+# Never add local environment files to the Docker image.
+.env
+.env.*
+env
+
+.DS_Store
+Thumbs.db

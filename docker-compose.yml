@@ -1,0 +1,33 @@
+services:
+  playwright-tests:
+    build:
+      context: .
+      args:
+        PLAYWRIGHT_VERSION: "1.61.1"
+    image: playwright-final-framework:local
+    init: true
+    ipc: host
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    env_file:
+      - ./env/.env.prod
+    environment:
+      CI: "true"
+      NODE_ENV: "PROD"
+      REGION: "PROD"
+      TEST_ENVIRONMENT: "PROD"
+      API_BASE_URL: "http://host.docker.internal:3001/api/v1/"
+      ALLURE_RESULTS_DIR: "/artifacts/allure-results"
+      STORAGE_STATE_ROOT_PATH: "/artifacts/storage-states"
+      PLAYWRIGHT_BLOB_OUTPUT_DIR: "/artifacts/blob-report"
+      PLAYWRIGHT_BLOB_OUTPUT_NAME: "report.zip"
+      HOME: "/tmp"
+    volumes:
+      - ./artifacts:/artifacts
+    command:
+      - npx
+      - playwright
+      - test
+      - --project=ui-chromium
+      - --project=visual-chromium
+      - --output=/artifacts/test-results
