@@ -1,23 +1,39 @@
-version: '3.8'
-
 services:
   jenkins:
-    build: .   # Tells Docker Compose to build your custom Dockerfile
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+    image: praneeth/jenkins-with-docker:lts
     container_name: jenkins-server
+
     user: root
     restart: unless-stopped
+
     ports:
       - "8085:8080"
       - "50000:50000"
+
     environment:
-      TZ: "UTC"
+      TZ: "Asia/Kolkata"
+
       JENKINS_JAVA_OPTS: >-
-        -Dhudson.model.DirectoryBrowserSupport.CSP="sandbox allow-same-origin allow-scripts; default-src 'self' data: blob:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' data: blob:; worker-src 'self' blob:; media-src 'self' data: blob:; frame-src 'self' data: blob:;"
+        -Dhudson.model.DirectoryBrowserSupport.CSP="sandbox allow-same-origin allow-scripts;
+        default-src 'self' data: blob:;
+        script-src 'self' 'unsafe-inline';
+        style-src 'self' 'unsafe-inline';
+        img-src 'self' data: blob:;
+        font-src 'self' data:;
+        connect-src 'self' data: blob:;
+        worker-src 'self' blob:;
+        media-src 'self' data: blob:;
+        frame-src 'self' data: blob:;"
+
     volumes:
       - jenkins_data:/var/jenkins_home
       - /var/run/docker.sock:/var/run/docker.sock
-      - playwright_browsers:/var/playwright-browsers
 
 volumes:
   jenkins_data:
-  playwright_browsers:
+    external: true
+    name: jenkins_jenkins_data
