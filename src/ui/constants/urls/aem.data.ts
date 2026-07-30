@@ -6,7 +6,8 @@ export type PAGE = |
     'DEMO_QA' |
     'AMAZON' |
     'FLIPKART' |
-    'SKY_SCANNER';
+    'SKY_SCANNER'|
+    'QA_PLAYGROUND_BANK_DASHBOARD';
 
 type QueryParametersType = Record<string, string>;
 
@@ -30,6 +31,11 @@ export const URLS: Record<PAGE, URL_CONFIG> = {
     },
     QA_PLAYGROUND_BANK: {
         path: 'https://qaplayground.com/bank/',
+        pageType: 'PLAYGROUND',
+        params: {}
+    },
+    QA_PLAYGROUND_BANK_DASHBOARD: {
+        path: 'https://qaplayground.com/bank/dashboard',
         pageType: 'PLAYGROUND',
         params: {}
     },

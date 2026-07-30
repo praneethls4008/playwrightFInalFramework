@@ -133,6 +133,45 @@ export default defineConfig({
       }
     },
 
+    {
+      name: 'visual-chromium',
+      testDir: './tests/visual',
+      testMatch: /.*\.spec\.ts/, 
+      expect: {
+        timeout: 15_000,
+        toHaveScreenshot: {
+          animations: 'disabled',
+
+          // Hide blinking input/text-area carets.
+          caret: 'hide',
+          scale: 'css',
+          threshold: 0.2,
+          maxDiffPixelRatio: 0.001,
+          pathTemplate: './resources/visual/__screenshots__{/projectName}/{testFilePath}/{arg}{ext}',
+          timeout: 30_000,
+        },
+      },
+      use:{
+        ...devices['Desktop Chrome'],
+        viewport: {
+          width: 1440,
+          height: 900,
+        },
+
+        deviceScaleFactor: 1,
+        colorScheme: 'light',
+        locale: 'en-US',
+        timezoneId: 'UTC',
+
+        actionTimeout: 15_000,
+        navigationTimeout: 45_000,
+
+        screenshot: 'only-on-failure',
+        trace: 'retain-on-failure',
+        video: 'retain-on-failure',
+      },
+    }
+
 
     /* Test against mobile viewports. */
     // {
