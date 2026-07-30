@@ -1,6 +1,6 @@
-import { getFullUrl } from "../../../src/ui/helper/urlResolver";
-import { expect, test } from "../../../src/visual/visual.fixture";
-import { gotoWithRetry, prepareForVisualTest, waitForAppReady, waitForFontsReady } from "../../../src/visual/visual.helper";
+import { getFullUrl } from "../../../../src/ui/helper/urlResolver";
+import { expect, test } from "../../../../src/visual/visual.fixture";
+import { gotoWithRetry, prepareForVisualTest, waitForAppReady, waitForFontsReady } from "../../../../src/visual/visual.helper";
 
 
 test.describe('Bank Dashboard Page visual Test', () => {
