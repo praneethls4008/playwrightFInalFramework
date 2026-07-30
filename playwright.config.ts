@@ -147,7 +147,7 @@ export default defineConfig({
           scale: 'css',
           threshold: 0.2,
           maxDiffPixelRatio: 0.001,
-          pathTemplate: './resources/visual/__screenshots__{/projectName}/{testFilePath}/{arg}{ext}',
+          pathTemplate: './resources/visual/{projectName}/{testFilePath}/{arg}{ext}',
           timeout: 30_000,
         },
       },
