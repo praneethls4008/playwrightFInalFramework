@@ -8,4 +8,5 @@ node_modules/
 /playwright/.cache/
 /playwright/.auth/
 /storage-states
+/artifacts
 .docker_access_token

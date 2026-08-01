@@ -24,6 +24,7 @@ test.describe(
             const responseBody: unknown = await response.json();
 
             authSchemaValidation(responseBody);
+            console.log(responseBody);
             accessToken = responseBody.access_token;
           }
         );

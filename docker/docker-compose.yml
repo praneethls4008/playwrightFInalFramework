@@ -1,0 +1,90 @@
+name: playwright-framework-local
+
+x-common: &common
+  build:
+    context: ..
+    dockerfile: docker/Dockerfile
+    args:
+      PLAYWRIGHT_VERSION: "1.61.1"
+
+  image: playwright-framework:local
+
+  init: true
+  ipc: host
+  working_dir: /app
+
+  user: "${LOCAL_UID:-1000}:${LOCAL_GID:-1000}"
+
+  extra_hosts:
+    - "host.docker.internal:host-gateway"
+
+  env_file:
+    - ../env/.env.prod
+
+  environment:
+    NODE_ENV: PROD
+    CI: "false"
+    BUILD_NUMBER: local-docker
+
+    API_BASE_URL: http://host.docker.internal:3001/api/v1/
+
+    ALLURE_RESULTS_DIR: /artifacts/allure-results
+    STORAGE_STATE_ROOT_PATH: /artifacts/storage-states/
+
+    PLAYWRIGHT_HTML_OUTPUT_DIR: /artifacts/playwright-report
+    PLAYWRIGHT_HTML_OPEN: never
+
+    HOME: /tmp
+
+services:
+  tests:
+    <<: *common
+
+    volumes:
+      - ../env:/app/env:ro
+      - ../resources:/app/resources:ro
+      - ../artifacts:/artifacts
+
+    command:
+      - npx
+      - playwright
+      - test
+      - --project=ui-chromium
+      - --project=api
+      - --project=visual-chromium
+      - --output=/artifacts/test-results
+
+  visual-check:
+    <<: *common
+
+    volumes:
+      - ../env:/app/env:ro
+      - ../resources:/app/resources:ro
+      - ../artifacts:/artifacts
+
+    command:
+      - npx
+      - playwright
+      - test
+      - --project=visual-chromium
+      - --output=/artifacts/test-results
+
+  visual-update:
+    <<: *common
+
+    volumes:
+      - ../env:/app/env:ro
+
+      # Writable mount so updated snapshots are saved
+      # directly into your local repository.
+      - ../resources:/app/resources
+
+      - ../artifacts:/artifacts
+
+    command:
+      - npx
+      - playwright
+      - test
+      - --project=visual-chromium
+      - --update-snapshots
+      - --output=/artifacts/test-results
