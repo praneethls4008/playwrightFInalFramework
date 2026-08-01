@@ -1,119 +1,346 @@
-# Local Playwright Docker commands
+# Docker Setup for Playwright Framework
 
-Run all commands from the repository root.
+This directory contains everything required to run the Playwright framework inside Docker for local development.
 
-## 1. Set your Linux user IDs
+The Docker setup is designed to:
 
-This avoids Docker creating root-owned reports and snapshot files.
+* Run UI, API and Visual tests in a consistent environment.
+* Generate and update visual snapshots.
+* Produce Playwright HTML and Allure reports.
+* Match the same environment used in CI.
+
+---
+
+# Prerequisites
+
+* Docker Desktop or Docker Engine
+* Docker Compose v2
+* Linux / macOS / WSL2
+
+Verify installation:
+
+```bash
+docker --version
+docker compose version
+```
+
+---
+
+# Folder Structure
+
+```text
+docker/
+├── Dockerfile
+├── docker-compose.yml
+└── README.md
+```
+
+Project output:
+
+```text
+artifacts/
+├── allure-results/
+├── playwright-report/
+├── storage-states/
+└── test-results/
+```
+
+Visual snapshots:
+
+```text
+resources/
+└── visual/
+```
+
+---
+
+# One-Time Setup
+
+Create the artifacts directory.
+
+```bash
+mkdir -p artifacts
+```
+
+Give yourself ownership.
+
+```bash
+sudo chown -R "$(id -u):$(id -g)" artifacts resources
+```
+
+Export your Linux UID and GID.
 
 ```bash
 export LOCAL_UID=$(id -u)
 export LOCAL_GID=$(id -g)
 ```
 
-## 2. Build the local image
+---
+
+# Build Docker Image
+
+From the project root:
 
 ```bash
 docker compose -f docker/docker-compose.yml build
 ```
 
-The image is named:
+The image will be created as:
 
 ```text
 playwright-framework:local
 ```
 
-## 3. Run UI, API and visual tests locally
+---
+
+# Run Complete Test Suite
+
+Runs:
+
+* UI Tests
+* API Tests
+* Visual Tests
 
 ```bash
 docker compose -f docker/docker-compose.yml run --rm tests
 ```
 
-## 4. Run only visual snapshot comparison
+Reports are generated under:
+
+```text
+artifacts/
+```
+
+---
+
+# Run Only Visual Comparison
+
+Compares the current UI against approved snapshots.
 
 ```bash
 docker compose -f docker/docker-compose.yml run --rm visual-check
 ```
 
-## 5. Update visual snapshots
+No snapshots are modified.
 
-Rebuild first whenever test code, configuration, page objects or dependencies change:
+---
 
-```bash
-docker compose -f docker/docker-compose.yml build
-```
+# Update Visual Snapshots
 
-Then update snapshots:
+Use this only after intentional UI changes.
 
 ```bash
 docker compose -f docker/docker-compose.yml run --rm visual-update
 ```
 
-The `visual-update` service mounts `resources/` as writable, so generated PNG files are saved to:
+Because the `resources` folder is mounted as a writable volume, updated PNG files are written directly into your local repository.
+
+Example:
 
 ```text
-resources/visual/
+resources/
+└── visual/
+    ├── login-page.png
+    ├── dashboard.png
+    └── ...
 ```
 
-The normal `tests` and `visual-check` services mount `resources/` as read-only, so CI-style runs cannot accidentally overwrite approved baselines.
+---
 
-## 6. Review and push snapshots
+# Verify Snapshot Changes
 
 ```bash
-git status --short resources/visual
+git status
+```
+
+or
+
+```bash
 git diff --stat
 ```
 
-Verify the approved baselines:
+Review every updated snapshot before committing.
+
+---
+
+# Commit Approved Snapshots
+
+```bash
+git add resources/visual
+git commit -m "Update approved visual snapshots"
+git push origin main
+```
+
+GitHub Actions will automatically build a new Docker image containing the updated snapshots.
+
+---
+
+# Serve Allure Report
+
+Generate and open the report.
+
+```bash
+npx allure serve artifacts/allure-results
+```
+
+Or generate a static report.
+
+```bash
+npx allure generate \
+  artifacts/allure-results \
+  --clean \
+  -o artifacts/allure-report
+```
+
+Open it.
+
+```bash
+npx allure open artifacts/allure-report
+```
+
+---
+
+# Playwright HTML Report
+
+Open:
+
+```text
+artifacts/playwright-report/index.html
+```
+
+---
+
+# Clean Generated Artifacts
+
+```bash
+rm -rf artifacts/*
+```
+
+---
+
+# Common Commands
+
+### Build
+
+```bash
+docker compose -f docker/docker-compose.yml build
+```
+
+### Run all tests
+
+```bash
+docker compose -f docker/docker-compose.yml run --rm tests
+```
+
+### Run visual comparison
 
 ```bash
 docker compose -f docker/docker-compose.yml run --rm visual-check
 ```
 
-Commit and push:
+### Update visual snapshots
 
 ```bash
-git add docker resources/visual
-git commit -m "Add local Docker workflows and update visual snapshots"
-git push origin main
+docker compose -f docker/docker-compose.yml run --rm visual-update
 ```
 
-## 7. Clean local containers and networks
+### Stop containers
 
 ```bash
-docker compose -f docker/docker-compose.yml down --remove-orphans
+docker compose -f docker/docker-compose.yml down
 ```
 
-To remove the local image too:
+---
+
+# Troubleshooting
+
+## Environment file not found
+
+Error:
+
+```text
+Unable to load environment file:
+/app/env/.env.prod
+```
+
+Ensure:
+
+```text
+env/
+└── .env.prod
+```
+
+exists in the project root.
+
+---
+
+## Permission denied
+
+If Docker cannot write reports:
+
+```text
+EACCES: permission denied
+```
+
+Run:
 
 ```bash
-docker image rm playwright-framework:local
+sudo chown -R "$(id -u):$(id -g)" artifacts resources
 ```
 
-## Required local files
+---
 
-The Compose file reads:
+## Fake API appears to be running
+
+Check:
+
+```bash
+docker ps
+```
+
+or
+
+```bash
+docker ps --filter publish=3001
+```
+
+If the API container is running, stop it:
+
+```bash
+docker stop <container-name>
+```
+
+---
+
+# CI Workflow
+
+Visual snapshot workflow:
 
 ```text
-env/.env.prod
+Developer
+    │
+    ├── Update snapshots locally
+    │
+    ├── Review PNG files
+    │
+    ├── Commit snapshots
+    │
+    ├── Push to GitHub
+    │
+    ├── GitHub Actions builds Docker image
+    │
+    ├── Image pushed to GitHub Container Registry (GHCR)
+    │
+    └── Jenkins pulls the image and compares snapshots
 ```
 
-Make sure it contains all variables required by `config/environment.config.ts`, including:
+Snapshots are never updated in Jenkins. Jenkins only validates them against the committed baseline.
 
-```text
-API_BASE_URL
-ALLURE_RESULTS_DIR
-CRYPTO_SECRET_KEY
-ADMIN_USERNAME
-ADMIN_PASSWORD
-USER_USERNAME
-USER_PASSWORD
-STORAGE_STATE_ROOT_PATH
-REGION
-```
+---
 
-`API_BASE_URL` is overridden inside Compose to use:
+# Notes
 
-```text
-http://host.docker.internal:3001/api/v1/
-```
+* Docker provides a consistent execution environment across local development and CI.
+* Visual snapshot updates should always be reviewed before committing.
+* Store approved snapshots in Git to keep all environments synchronized.
+* Use the same Playwright version locally and in CI to avoid rendering differences.

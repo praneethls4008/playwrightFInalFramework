@@ -1,0 +1,471 @@
+pipeline {
+    agent any
+
+    parameters {
+        string(
+            name: 'IMAGE_TAG',
+            defaultValue: 'latest',
+            description: 'GHCR tag: latest, main, or sha-<full-git-sha>'
+        )
+
+        choice(
+            name: 'SHARD_TOTAL',
+            choices: ['1', '2', '3'],
+            description: 'Number of Playwright shards'
+        )
+    }
+
+    environment {
+        GHCR_IMAGE = 'ghcr.io/praneethls4008/playwright-framework'
+        JENKINS_HOME_VOLUME = 'jenkins_jenkins_data'
+
+        NODE_ENV = 'PROD'
+        CI = 'true'
+        REGION = 'PROD'
+
+        API_BASE_URL = 'http://host.docker.internal:3001/api/v1/'
+    }
+
+    options {
+        timestamps()
+        disableConcurrentBuilds()
+        skipDefaultCheckout(true)
+
+        buildDiscarder(
+            logRotator(
+                numToKeepStr: '20',
+                artifactNumToKeepStr: '10'
+            )
+        )
+    }
+
+    stages {
+        stage('Clean Workspace') {
+            steps {
+                cleanWs()
+            }
+        }
+
+        stage('Pull GHCR Image') {
+            steps {
+                script {
+                    env.FULL_IMAGE =
+                        "${env.GHCR_IMAGE}:${params.IMAGE_TAG}"
+                }
+
+                sh '''
+                    set -eu
+
+                    echo "Pulling image: ${FULL_IMAGE}"
+
+                    docker pull "${FULL_IMAGE}"
+
+                    docker image inspect "${FULL_IMAGE}" \
+                      --format \
+                      'Image={{.RepoTags}} ID={{.Id}} Created={{.Created}}'
+                '''
+            }
+        }
+
+        stage('Prepare Output Directories') {
+            steps {
+                sh '''
+                    set -eu
+
+                    rm -rf \
+                      test-results \
+                      allure-shard* \
+                      blob-shard* \
+                      combined-blobs \
+                      combined-allure-results \
+                      playwright-report \
+                      storage-states
+
+                    mkdir -p \
+                      test-results \
+                      combined-blobs \
+                      combined-allure-results \
+                      playwright-report \
+                      storage-states
+
+                    for SHARD_INDEX in $(seq 1 "${SHARD_TOTAL}")
+                    do
+                        mkdir -p \
+                          "test-results/shard${SHARD_INDEX}" \
+                          "allure-shard${SHARD_INDEX}" \
+                          "blob-shard${SHARD_INDEX}" \
+                          "storage-states/shard${SHARD_INDEX}"
+                    done
+                '''
+            }
+        }
+
+        stage('Run Playwright Shards') {
+            steps {
+                withCredentials([
+                    string(
+                        credentialsId: 'crypto-secret-key',
+                        variable: 'CRYPTO_SECRET_KEY'
+                    ),
+                    usernamePassword(
+                        credentialsId: 'bankapp-admin-credentials',
+                        usernameVariable: 'ADMIN_USERNAME',
+                        passwordVariable: 'ADMIN_PASSWORD'
+                    ),
+                    usernamePassword(
+                        credentialsId: 'bankapp-user-credentials',
+                        usernameVariable: 'USER_USERNAME',
+                        passwordVariable: 'USER_PASSWORD'
+                    )
+                ]) {
+                    script {
+                        def shardBranches = [:]
+                        int total = params.SHARD_TOTAL.toInteger()
+
+                        for (int i = 1; i <= total; i++) {
+                            int shardIndex = i
+
+                            shardBranches[
+                                "Shard ${shardIndex}/${total}"
+                            ] = {
+                                withEnv([
+                                    "SHARD_INDEX=${shardIndex}",
+                                    "SHARD_TOTAL_VALUE=${total}"
+                                ]) {
+                                    catchError(
+                                        buildResult: 'FAILURE',
+                                        stageResult: 'FAILURE'
+                                    ) {
+                                        sh '''
+                                            set -eu
+
+                                            echo "========================================"
+                                            echo "Running shard"
+                                            echo "${SHARD_INDEX}/${SHARD_TOTAL_VALUE}"
+                                            echo "========================================"
+
+                                            docker run --rm \
+                                              --init \
+                                              --ipc=host \
+                                              --name \
+                                                "playwright-${BUILD_NUMBER}-shard-${SHARD_INDEX}" \
+                                              --add-host=host.docker.internal:host-gateway \
+                                              --volume \
+                                                "${JENKINS_HOME_VOLUME}:/var/jenkins_home" \
+                                              --workdir /app \
+                                              --env HOME=/tmp \
+                                              --env CI=true \
+                                              --env NODE_ENV=PROD \
+                                              --env REGION="${REGION}" \
+                                              --env BUILD_NUMBER="${BUILD_NUMBER}" \
+                                              --env API_BASE_URL="${API_BASE_URL}" \
+                                              --env \
+                                                ALLURE_RESULTS_DIR="${WORKSPACE}/allure-shard${SHARD_INDEX}" \
+                                              --env \
+                                                PLAYWRIGHT_BLOB_OUTPUT_DIR="${WORKSPACE}/blob-shard${SHARD_INDEX}" \
+                                              --env \
+                                                PLAYWRIGHT_BLOB_OUTPUT_NAME="shard-${SHARD_INDEX}.zip" \
+                                              --env \
+                                                STORAGE_STATE_ROOT_PATH="${WORKSPACE}/storage-states/shard${SHARD_INDEX}/" \
+                                              --env CRYPTO_SECRET_KEY \
+                                              --env ADMIN_USERNAME \
+                                              --env ADMIN_PASSWORD \
+                                              --env USER_USERNAME \
+                                              --env USER_PASSWORD \
+                                              "${FULL_IMAGE}" \
+                                              npx playwright test \
+                                                --project=ui-chromium \
+                                                --project=api \
+                                                --project=visual-chromium \
+                                                --shard="${SHARD_INDEX}/${SHARD_TOTAL_VALUE}" \
+                                                --output="${WORKSPACE}/test-results/shard${SHARD_INDEX}"
+                                        '''
+                                    }
+                                }
+                            }
+                        }
+
+                        parallel shardBranches
+                    }
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            script {
+                echo '========================================'
+                echo 'Collecting and publishing reports'
+                echo '========================================'
+
+                /*
+                 * Collect reports inside post-always so reports are
+                 * processed even when one or more test shards fail.
+                 */
+                def collectionStatus = sh(
+                    returnStatus: true,
+                    script: '''
+                        set -eu
+
+                        rm -rf \
+                          combined-blobs \
+                          combined-allure-results
+
+                        mkdir -p \
+                          combined-blobs \
+                          combined-allure-results
+
+                        for SHARD_INDEX in $(seq 1 "${SHARD_TOTAL}")
+                        do
+                            BLOB_DIRECTORY="blob-shard${SHARD_INDEX}"
+                            ALLURE_DIRECTORY="allure-shard${SHARD_INDEX}"
+
+                            echo "Processing shard ${SHARD_INDEX}"
+
+                            if [ -d "${BLOB_DIRECTORY}" ]; then
+                                find "${BLOB_DIRECTORY}" \
+                                  -maxdepth 1 \
+                                  -type f \
+                                  -name "*.zip" \
+                                  -exec cp {} combined-blobs/ \\;
+                            else
+                                echo "Missing: ${BLOB_DIRECTORY}"
+                            fi
+
+                            if [ -d "${ALLURE_DIRECTORY}" ]; then
+                                cp -a \
+                                  "${ALLURE_DIRECTORY}/." \
+                                  combined-allure-results/
+                            else
+                                echo "Missing: ${ALLURE_DIRECTORY}"
+                            fi
+                        done
+
+                        BLOB_COUNT=$(
+                            find combined-blobs \
+                              -maxdepth 1 \
+                              -type f \
+                              -name "*.zip" \
+                              2>/dev/null |
+                            wc -l |
+                            tr -d ' '
+                        )
+
+                        ALLURE_COUNT=$(
+                            find combined-allure-results \
+                              -maxdepth 1 \
+                              -type f \
+                              -name "*-result.json" \
+                              2>/dev/null |
+                            wc -l |
+                            tr -d ' '
+                        )
+
+                        echo "Collected blob reports: ${BLOB_COUNT}"
+                        echo "Collected Allure results: ${ALLURE_COUNT}"
+
+                        echo "Blob files:"
+
+                        find combined-blobs \
+                          -maxdepth 1 \
+                          -type f \
+                          -name "*.zip" \
+                          -print || true
+                    '''
+                )
+
+                echo "Report collection exit code: ${collectionStatus}"
+
+                /*
+                 * Count Playwright blob reports.
+                 */
+                def blobCountText = sh(
+                    returnStdout: true,
+                    script: '''
+                        find combined-blobs \
+                          -maxdepth 1 \
+                          -type f \
+                          -name "*.zip" \
+                          2>/dev/null |
+                        wc -l |
+                        tr -d ' '
+                    '''
+                ).trim()
+
+                int blobCount = 0
+
+                if (blobCountText?.isInteger()) {
+                    blobCount = blobCountText.toInteger()
+                }
+
+                echo "Playwright blob ZIP count: ${blobCount}"
+
+                /*
+                 * Merge all Playwright shard blob reports.
+                 */
+                if (blobCount > 0 && env.FULL_IMAGE) {
+                    catchError(
+                        buildResult: 'UNSTABLE',
+                        stageResult: 'FAILURE'
+                    ) {
+                        sh '''
+                            set -eu
+
+                            rm -rf playwright-report
+                            mkdir -p playwright-report
+
+                            echo "Generating merged Playwright HTML report..."
+
+                            docker run --rm \
+                              --init \
+                              --volume \
+                                "${JENKINS_HOME_VOLUME}:/var/jenkins_home" \
+                              --workdir /app \
+                              --env HOME=/tmp \
+                              --env PLAYWRIGHT_HTML_OPEN=never \
+                              --env \
+                                PLAYWRIGHT_HTML_OUTPUT_DIR="${WORKSPACE}/playwright-report" \
+                              "${FULL_IMAGE}" \
+                              npx playwright merge-reports \
+                                --reporter=html \
+                                "${WORKSPACE}/combined-blobs"
+
+                            if [ ! -f \
+                              "${WORKSPACE}/playwright-report/index.html" \
+                            ]; then
+                                echo "ERROR: Playwright index.html was not generated."
+                                exit 1
+                            fi
+
+                            echo "Playwright report generated:"
+                            ls -lh \
+                              "${WORKSPACE}/playwright-report/index.html"
+                        '''
+                    }
+                } else {
+                    echo 'No Playwright blobs available for merging.'
+                }
+
+                /*
+                 * Publish Playwright HTML report.
+                 *
+                 * alwaysLinkToLastBuild creates the report link on
+                 * the Jenkins job page.
+                 */
+                if (fileExists('playwright-report/index.html')) {
+                    catchError(
+                        buildResult: 'UNSTABLE',
+                        stageResult: 'FAILURE'
+                    ) {
+                        publishHTML(target: [
+                            allowMissing         : false,
+                            alwaysLinkToLastBuild: true,
+                            keepAll              : true,
+                            reportDir            : 'playwright-report',
+                            reportFiles          : 'index.html',
+                            reportName           : 'Playwright Report',
+                            reportTitles         : 'Merged Playwright Shard Report',
+                            escapeUnderscores    : false,
+                            numberOfWorkers      : 4
+                        ])
+                    }
+
+                    echo 'Playwright HTML report published.'
+                } else {
+                    echo 'ERROR: playwright-report/index.html is missing.'
+                }
+
+                /*
+                 * Count Allure raw result files.
+                 */
+                def allureCountText = sh(
+                    returnStdout: true,
+                    script: '''
+                        find combined-allure-results \
+                          -maxdepth 1 \
+                          -type f \
+                          -name "*-result.json" \
+                          2>/dev/null |
+                        wc -l |
+                        tr -d ' '
+                    '''
+                ).trim()
+
+                int allureCount = 0
+
+                if (allureCountText?.isInteger()) {
+                    allureCount = allureCountText.toInteger()
+                }
+
+                echo "Allure result JSON count: ${allureCount}"
+
+                /*
+                 * Publish Allure report.
+                 */
+                if (allureCount > 0) {
+                    catchError(
+                        buildResult: 'UNSTABLE',
+                        stageResult: 'FAILURE'
+                    ) {
+                        allure(
+                            commandline: 'allure-2.43.0',
+                            reportBuildPolicy: 'ALWAYS',
+                            reportName: 'Allure Report',
+                            resultPolicy: 'LEAVE_AS_IS',
+                            includeProperties: false,
+                            jdk: '',
+                            results: [
+                                [
+                                    path: 'combined-allure-results'
+                                ]
+                            ]
+                        )
+                    }
+
+                    echo 'Allure report published.'
+                } else {
+                    echo 'ERROR: No Allure result JSON files were found.'
+                }
+
+                /*
+                 * Archive all report files and failure evidence.
+                 *
+                 * Storage-state files are intentionally excluded because
+                 * they may contain authenticated cookies and tokens.
+                 */
+                catchError(
+                    buildResult: 'UNSTABLE',
+                    stageResult: 'FAILURE'
+                ) {
+                    archiveArtifacts(
+                        artifacts: [
+                            'test-results/**',
+                            'playwright-report/**',
+                            'combined-blobs/**',
+                            'combined-allure-results/**',
+                            'blob-shard*/**',
+                            'allure-shard*/**'
+                        ].join(', '),
+                        allowEmptyArchive: true,
+                        fingerprint: false
+                    )
+                }
+
+                /*
+                 * Clean any stopped shard containers.
+                 */
+                sh '''
+                    docker ps -a \
+                      --filter \
+                        "name=playwright-${BUILD_NUMBER}-shard-" \
+                      --format "{{.ID}}" |
+                    xargs -r docker rm -f \
+                      2>/dev/null || true
+                '''
+
+                echo 'Report processing completed.'
+            }
+        }
+    }
+}
